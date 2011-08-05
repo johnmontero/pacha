@@ -1,4 +1,5 @@
-from os             import path
+import sys
+from os             import path, listdir
 from subprocess     import Popen, PIPE
 
 
@@ -72,4 +73,46 @@ def get_pid_dir():
     file_dir = path.dirname(file_cwd)
     return file_dir
 
+def get_commands():
+    """
+    Returns a list of all the command names that are available.
 
+    Returns an empty list if no commands are defined.
+    """
+    command_dir = path.join('/'.join(__file__.split('/')[:-1]), 'commands')
+    try:
+        return [f[:-3] for f in listdir(command_dir)
+                if not f.startswith('_') and f.endswith('.py')]
+    except OSError:
+        return []
+
+def load_command_class(name):
+    full_name = 'pacha.commands.%s' % name
+    __import__(full_name)
+    return sys.modules[full_name].Command()
+
+def run_command_class(command):
+    try:
+        klass = load_command_class(command)
+    except (KeyError, ImportError):
+        sys.stderr.write("Unknown command: %r\nType 'pacha' for usage.\n" % \
+                (command))
+        sys.exit(1)
+    return klass
+
+def out(msg):
+    sys.stdout.write(msg)
+    sys.stdout.flush()
+
+
+def err(msg):
+    sys.stderr.write(msg)
+    sys.stderr.flush()
+
+
+def error(msg, exit=True):
+    err("ERROR: %s" % msg)
+    if exit:
+        sys.exit(1)
+
+get_sumary_commad = lambda command: load_command_class(command).summary

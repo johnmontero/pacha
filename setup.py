@@ -1,3 +1,4 @@
+import pacha
 import distribute_setup
 distribute_setup.use_setuptools()
 from setuptools import setup
@@ -6,8 +7,11 @@ tests_require = ['pytest']
 
 setup(
     name = "pacha",
-    version = "0.3.0",
-    packages = ['pacha'],
+    version = pacha.__version__,
+    packages = ['pacha',
+                'pacha/commands/',
+                'pacha/commands/daemon',
+                'pacha/commands/rebuilding'],
     install_requires = [
         'supay==0.0.7', 
         'guachi==0.0.6',
@@ -25,7 +29,7 @@ setup(
     # metadata 
     author = "Alfredo Deza",
     author_email = "alfredodeza [at] gmail [dot] com",
-    description = "Systems configuration/management engine",
+    description = "Systems configuration/management engin",
     long_description = """\
 Pacha was designed from the ground up to be a simple way to backup and 
 manage software configuration files from single or multiple server 
